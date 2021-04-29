@@ -42,9 +42,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.discount = discount
         self.iterations = iterations
         self.values = util.Counter() # A Counter is a dict with default 0
-
         # Write value iteration code here
-        "*** YOUR CODE HERE ***"
         for i in range(self.iterations):
             updates = self.values.copy()
             # update with new value per state from qvalue
@@ -72,8 +70,6 @@ class ValueIterationAgent(ValueEstimationAgent):
             utility.append(prob * (reward + self.discount * self.getValue(nextState)))
         return sum(utility)
 
-        util.raiseNotDefined()
-
     def computeActionFromValues(self, state):
         """
           The policy is the best action in the given state
@@ -82,16 +78,18 @@ class ValueIterationAgent(ValueEstimationAgent):
           there are no legal actions, which is the case at the
           terminal state, you should return None.
         """
-        if self.mdp.isTerminal(state):
-            return None
-
-        a = util.Counter()
-        actions = self.mdp.getPossibleActions(state)
-        for action in actions:
-            a[action] = self.getQValue(state, action)
-        return a.argMax()
-
-        util.raiseNotDefined()
+        best = None
+		value = 0
+		for action in self.mdp.getPossibleActions(state):
+			if not best: 
+				best = action
+				value = self.computeQValueFromValues(state, action)
+			else:
+				new_value = self.computeQValueFromValues(state, action)
+				if value < new_value:
+					best = action
+					value = new_value
+		return best
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
