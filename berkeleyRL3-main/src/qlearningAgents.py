@@ -61,10 +61,9 @@ class QLearningAgent(ReinforcementAgent):
           there are no legal actions, which is the case at the
           terminal state, you should return a value of 0.0.
         """
-        actions = self.getLegalActions(state)
-        if len(actions) == 0:
-            return 0.0
-        return max([self.getQValue(state, action) for action in actions])
+        if len(self.getLegalActions(state)) == 0:
+            return 0
+        return max([self.getQValue(state, a) for a in self.getLegalActions(state)])
 
     def computeActionFromQValues(self, state):
         """
@@ -72,20 +71,22 @@ class QLearningAgent(ReinforcementAgent):
           are no legal actions, which is the case at the terminal state,
           you should return None.
         """
+
         if len(self.getLegalActions(state)) == 0:
             return None
 
-        max_qvalue = self.computeValueFromQValues(state)
+        max_qval = self.computeValueFromQValues(state)
 
-        qvalues_actions = []
-        for action in self.getLegalActions(state):
-            qvalues_actions.append([self.getQValue(state, action), action])
+        qval_actions = []
+        #a == action
+        for a in self.getLegalActions(state):
+            qval_actions.append([self.getQValue(state, a), a])
 
-        tie_breaker = []
-        for tuple in qvalues_actions:
-            if tuple[0] == max_qvalue:
-                tie_breaker.append(tuple[1])
-        return random.choice(tie_breaker)
+        parameter_for_tie = []
+        for tuple in qval_actions:
+            if tuple[0] == max_qval:
+                parameter_for_tie.append(tuple[1])
+        return random.choice(parameter_for_tie)
 
     def getAction(self, state):
         """
@@ -98,15 +99,14 @@ class QLearningAgent(ReinforcementAgent):
           HINT: You might want to use util.flipCoin(prob)
           HINT: To pick randomly from a list, use random.choice(list)
         """
-        # Pick Action
-        legalActions = self.getLegalActions(state)
-        action = None
-        if len(legalActions):
+        # a== action
+        a = None
+        if len(self.getLegalActions(state)):
             if util.flipCoin(self.epsilon):
-                action = random.choice(legalActions)
+                a = random.choice(self.getLegalActions(state))
             else:
-                action = self.computeActionFromQValues(state)
-        return action
+                a = self.computeActionFromQValues(state)
+        return a
 
     def update(self, state, action, nextState, reward):
         """
