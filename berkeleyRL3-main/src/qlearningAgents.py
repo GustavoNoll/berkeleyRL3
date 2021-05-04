@@ -41,7 +41,6 @@ class QLearningAgent(ReinforcementAgent):
     def __init__(self, **args):
         "You can initialize Q-values here..."
         ReinforcementAgent.__init__(self, **args)
-
         self.qvalues = util.Counter()
 
     def getQValue(self, state, action):
@@ -50,7 +49,6 @@ class QLearningAgent(ReinforcementAgent):
           Should return 0.0 if we have never seen a state
           or the Q node value otherwise
         """
-        "*** YOUR CODE HERE ***"
         return self.qvalues[(state, action)]
 
 
@@ -63,7 +61,10 @@ class QLearningAgent(ReinforcementAgent):
         """
         if len(self.getLegalActions(state)) == 0:
             return 0
-        return max([self.getQValue(state, a) for a in self.getLegalActions(state)])
+        q_vals=[]
+        for action in self.getLegalActions(state):
+            q_vals.append(self.getQValue(state, action))
+        return max(q_vals)
 
     def computeActionFromQValues(self, state):
         """
@@ -79,8 +80,8 @@ class QLearningAgent(ReinforcementAgent):
 
         qval_actions = []
         #a == action
-        for a in self.getLegalActions(state):
-            qval_actions.append([self.getQValue(state, a), a])
+        for action in self.getLegalActions(state):
+            qval_actions.append([self.getQValue(state, action), action])
 
         parameter_for_tie = []
         for tuple in qval_actions:
